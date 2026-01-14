@@ -4,7 +4,8 @@ import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism-tomorrow.css';
-import { Flame, Loader2, UserStar } from 'lucide-react';
+import { Flame, Loader2 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 
 function App() {
@@ -78,13 +79,50 @@ function App() {
             {isLoading ? "Roasting..." : "Roast Me!"}
           </button>
         </div>
+      </div>
 
-        {/* Right Column: Output */}
-        <div className="card">
-          <h2 style={{ marginTop: 0, color: '#94a3b8' }}>The Verdict:</h2>
-          <div style={{ color: '#cbd5e1', lineHeight: '1.6' }}>
-            {roast || "Waiting for your code snippet..."}
-          </div>
+      <div className="card">
+        <h2 style={{ marginTop: 0, color: '#94a3b8' }}>The Verdict:</h2>
+
+        <div style={{
+          color: '#cbd5e1',
+          lineHeight: '1.6',
+          fontSize: '0.95rem'
+        }}>
+          {isLoading ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Loader2 className="animate-spin" />
+              <span>Analyzing your spaghetti...</span>
+            </div>
+          ) : roast ? (
+            // 2. Replace the text div with ReactMarkdown
+            <ReactMarkdown
+              components={{
+                // Optional: Custom styling for code blocks inside the roast
+                code({ node, inline, className, children, ...props }) {
+                  return !inline ? (
+                    <div style={{
+                      background: '#0f172a',
+                      padding: '10px',
+                      borderRadius: '6px',
+                      overflowX: 'auto',
+                      margin: '10px 0'
+                    }}>
+                      <code {...props}>{children}</code>
+                    </div>
+                  ) : (
+                    <code style={{ background: '#334155', padding: '2px 4px', borderRadius: '4px' }} {...props}>
+                      {children}
+                    </code>
+                  )
+                }
+              }}
+            >
+              {roast}
+            </ReactMarkdown>
+          ) : (
+            <p style={{ opacity: 0.5 }}>Waiting for your code snippet...</p>
+          )}
         </div>
       </div>
     </div>
