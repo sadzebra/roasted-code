@@ -14,10 +14,36 @@ function App() {
 
   const handleRoast = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setRoast("This is where the roast will appear once we wire it up!");
+    setRoast("");
+
+    try {
+      const requestData = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: code,
+          language: 'javascript'
+        }),
+      };
+
+      const response = await fetch("http://localhost:3000/roast", requestData)
+
+      if (!response.ok) {
+        throw new Error("Response was not okay");
+      }
+
+      const data = await response.json();
+      setRoast(data.roast);
+    }
+    catch (error) {
+      console.log(`something went wrong, error message: ${error.message}`);
+      setRoast("Something went wrong with the response");
+    }
+    finally {
       setIsLoading(false);
-    }, 1000);
+    }
   }
 
   return (
